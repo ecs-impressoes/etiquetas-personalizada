@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Produto - Etiquetas Adesivas</title>
+  <style>
+    /* Mesmo estilo base do index.html */
+    * { margin:0; padding:0; box-sizing: border-box; }
+    :root {
+      --azul: #0a58ca;
+      --azul-escuro: #0a3b7a;
+      --mostarda: #e6b422;
+      --mostarda-escuro: #c49a0c;
+      --cinza-claro: #f8f9fa;
+      --cinza-borda: #e9ecef;
+      --branco: #ffffff;
+      --texto: #212529;
+      --shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+    }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--cinza-claro);
+      color: var(--texto);
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .top-bar {
+      background: var(--mostarda);
+      padding: 0.6rem 0;
+    }
+    .header {
+      background: var(--branco);
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--cinza-borda);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo a {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+      color: var(--azul);
+    }
+    .logo span { color: var(--mostarda); }
+    .cart-icon {
+      background: var(--mostarda);
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      color: #2c2c2c;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .cart-count {
+      background: var(--azul);
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+    .product-detail {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 2rem 0;
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+    .product-image {
+      text-align: center;
+    }
+    .product-image img {
+      max-width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+    }
+    .product-info h1 {
+      color: var(--azul);
+      margin-bottom: 0.5rem;
+    }
+    .product-id {
+      color: #6c757d;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .price {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--azul);
+      margin: 1rem 0;
+    }
+    .pix-price {
+      font-size: 1rem;
+      color: #2b8c4a;
+    }
+    .description {
+      margin: 1.5rem 0;
+      line-height: 1.6;
+    }
+    .description h3 {
+      color: var(--azul);
+      margin-bottom: 0.5rem;
+    }
+    .btn {
+      display: inline-block;
+      background: var(--mostarda);
+      color: #2c2c2c;
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .btn-primary {
+      background: var(--azul);
+      color: white;
+    }
+    .back-link {
+      margin: 1rem 0;
+      display: inline-block;
+    }
+    @media (max-width: 768px) {
+      .product-detail {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="top-bar"><div class="container">✨ Detalhes do produto</div></div>
+<header class="header">
+  <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="logo"><a href="index.html">Etiquetas <span>Adesivas</span></a></div>
+    <a href="carrinho.html" class="cart-icon">
+      🛒 <span class="cart-count" id="cartCount">0</span>
+    </a>
+  </div>
+</header>
+
+<div class="container">
+  <a href="javascript:history.back()" class="back-link">← Voltar</a>
+  <div id="productDetail" class="product-detail">
+    <!-- conteúdo carregado via JS -->
+  </div>
+</div>
+
+<script>
+  // Produtos (mesmo array do index.html)
+  const products = [
+    { id: "ecs01", name: "250 Etiquetas Adesivas de Páscoa", price: 28.90, image: "ECS01.png", 
+      description: "Etiquetas adesivas temáticas para Páscoa. Tamanho 4x4, papel vinil, ideal para decorar presentes e embalagens. Envio imediato.", 
+      longDesc: "Prepare-se para uma Páscoa cheia de estilo e personalidade com nossas incríveis etiquetas adesivas temáticas! Deixe sua criatividade fluir com nossa seleção exclusiva de designs vibrantes e encantadores, perfeitos para decorar presentes, embalagens e muito mais. Com materiais de alta qualidade e acabamento impecável, nossas etiquetas adesivas garantem que seus presentes se destaquem nesta temporada festiva. Personalize suas etiquetas com mensagens especiais ou nomes para um toque ainda mais único. Deixe-nos ajudá-lo a tornar esta Páscoa memorável e cheia de brilho com nossas etiquetas adesivas personalizadas. Explore nossa coleção agora e dê um toque extra de encanto aos seus momentos especiais.<br><br><strong>Descrição do Produto:</strong><br>Tamanho: 4x4<br>Tipo do Papel: Vinil<br><br><strong>Atenção:</strong><br>Existe uma possibilidade de variação nas tonalidades devido à variação de tela para cores impressas, iluminação e filtro das fotos.<br><br>Analise as características específicas do produto antes de efetuar a compra.<br><br>IMAGENS MERAMENTE ILUSTRATIVAS<br><br>ATENDIMENTO PERSONALIZADO - Tire suas dúvidas, nossos especialistas estarão disponíveis para lhe auxiliar.<br><br>ENVIO IMEDIATO - Enviamos em até 48 horas, após a aprovação de pagamento.<br><br>Produto 100% original, lacrado e disponível a pronta entrega para todo Brasil!" },
+    { id: "ecs02", name: "120 Etiquetas Adesivas de Páscoa - Modelo 1", price: 14.90, image: "ECS02.png", 
+      description: "Etiquetas adesivas temáticas para Páscoa. Tamanho 4x4, papel vinil, ideal para decorar presentes e embalagens.", 
+      longDesc: "Prepare-se para uma Páscoa cheia de estilo e personalidade com nossas incríveis etiquetas adesivas temáticas! Deixe sua criatividade fluir com nossa seleção exclusiva de designs vibrantes e encantadores, perfeitos para decorar presentes, embalagens e muito mais. Com materiais de alta qualidade e acabamento impecável, nossas etiquetas adesivas garantem que seus presentes se destaquem nesta temporada festiva. Personalize suas etiquetas com mensagens especiais ou nomes para um toque ainda mais único. Deixe-nos ajudá-lo a tornar esta Páscoa memorável e cheia de brilho com nossas etiquetas adesivas personalizadas. Explore nossa coleção agora e dê um toque extra de encanto aos seus momentos especiais.<br><br><strong>Descrição do Produto:</strong><br>Tamanho: 4x4<br>Tipo do Papel: Vinil<br><br><strong>Atenção:</strong><br>Existe uma possibilidade de variação nas tonalidades devido à variação de tela para cores impressas, iluminação e filtro das fotos.<br><br>Analise as características específicas do produto antes de efetuar a compra.<br><br>IMAGENS MERAMENTE ILUSTRATIVAS<br><br>ATENDIMENTO PERSONALIZADO - Tire suas dúvidas, nossos especialistas estarão disponíveis para lhe auxiliar.<br><br>ENVIO IMEDIATO - Enviamos em até 48 horas, após a aprovação de pagamento.<br><br>Produto 100% original, lacrado e disponível a pronta entrega para todo Brasil!" },
+    { id: "ecs03", name: "Etiqueta mx5500", price: 18.90, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/225703658/1-7vszscth5i.png",
+      description: "Etiqueta adesiva para etiquetadora MX5500. Diversas cores e tamanhos.", 
+      longDesc: "Etiqueta adesiva de alta qualidade para uso em etiquetadoras MX5500. Ideal para precificação e identificação de produtos. Papel couché brilhante, adesivo forte e durabilidade. Disponível em vários tamanhos e cores. Envio imediato para todo Brasil." },
+    { id: "ecs04", name: "Etiqueta bolinha 15mm C/ 504 Unidades", price: 3.50, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/2219462647dca786526.jpg",
+      description: "Etiquetas adesivas redondas de 15mm, 504 unidades. Perfeitas para organização.", 
+      longDesc: "Etiquetas adesivas redondas de 15mm de diâmetro. Pacote com 504 unidades. Ideais para identificar produtos, organizar estoque, decorar convites e muito mais. Papel adesivo branco, fácil aplicação. Envio imediato." },
+    { id: "ecs05", name: "120 Etiquetas Adesivas de Páscoa - Modelo 2", price: 14.90, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/303701347/modelo-2-03eu6j9r8p.jpg",
+      description: "Etiquetas adesivas temáticas para Páscoa. Tamanho 4x4, papel vinil.", 
+      longDesc: "Prepare-se para uma Páscoa cheia de estilo e personalidade com nossas incríveis etiquetas adesivas temáticas! Deixe sua criatividade fluir com nossa seleção exclusiva de designs vibrantes e encantadores, perfeitos para decorar presentes, embalagens e muito mais. Com materiais de alta qualidade e acabamento impecável, nossas etiquetas adesivas garantem que seus presentes se destaquem nesta temporada festiva. Personalize suas etiquetas com mensagens especiais ou nomes para um toque ainda mais único. Deixe-nos ajudá-lo a tornar esta Páscoa memorável e cheia de brilho com nossas etiquetas adesivas personalizadas. Explore nossa coleção agora e dê um toque extra de encanto aos seus momentos especiais.<br><br><strong>Descrição do Produto:</strong><br>Tamanho: 4x4<br>Tipo do Papel: Vinil<br><br><strong>Atenção:</strong><br>Existe uma possibilidade de variação nas tonalidades devido à variação de tela para cores impressas, iluminação e filtro das fotos.<br><br>Analise as características específicas do produto antes de efetuar a compra.<br><br>IMAGENS MERAMENTE ILUSTRATIVAS<br><br>ATENDIMENTO PERSONALIZADO - Tire suas dúvidas, nossos especialistas estarão disponíveis para lhe auxiliar.<br><br>ENVIO IMEDIATO - Enviamos em até 48 horas, após a aprovação de pagamento.<br><br>Produto 100% original, lacrado e disponível a pronta entrega para todo Brasil!" },
+    { id: "ecs06", name: "Lacre de sacola - Ame-se você é incrível - Rosa C/100 UND", price: 7.90, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/259228413/8165-novo-2k3tn4kx1p.jpg",
+      description: "Lacre adesivo para sacolas com frase motivacional. 100 unidades.", 
+      longDesc: "Lacre adesivo para sacolas com frase 'Ame-se você é incrível'. Cor rosa, 100 unidades. Ideal para fechar embalagens de presentes, sacolas de lojas, garantindo um acabamento profissional e um toque de carinho. Material adesivo de alta qualidade. Envio imediato." },
+    { id: "ecs07", name: "Etiquetas Adesivas Mx5500 Tarjada", price: 13.90, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/2342289356a5dc2308c.jpg",
+      description: "Etiquetas tarjadas para etiquetadora MX5500. Diversos modelos.", 
+      longDesc: "Etiquetas adesivas tarjadas (com tarja) para uso em etiquetadoras MX5500. Perfeitas para promoções, descontos e informações especiais. Papel couché, impressão de alta qualidade. Envio imediato para todo Brasil." },
+    { id: "ecs08", name: "FIX PIN PINO PLASTICO IMPORTADO 25MM C/5.000 UNIDADES", price: 24.90, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/365474821/0ceb7a416952f078c1f242986ac5e17f-znoqz7rz2h.png",
+      description: "Pino plástico para fixação de etiquetas em tecidos. 5.000 unidades.", 
+      longDesc: "Pino plástico importado de 25mm, utilizado para fixar etiquetas em roupas, tecidos e produtos em geral. Pacote com 5.000 unidades. Material resistente e de fácil aplicação. Ideal para indústria têxtil, confecções e lojas. Envio imediato." },
+    { id: "ecs09", name: "Etiqueta adesiva - Cuidado Frágil 100x50", price: 15.90, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/270711110375f09d73a.jpg",
+      description: "Etiqueta adesiva de alerta 'Cuidado Frágil' para embalagens.", 
+      longDesc: "Etiqueta adesiva de alerta com texto 'Cuidado Frágil'. Dimensões 100x50mm. Ideal para identificar caixas e embalagens que necessitam de manuseio cuidadoso. Papel adesivo branco, boa aderência. Envio imediato." },
+    { id: "ecs10", name: "Etiqueta Adesiva Splash promoção valor - Vermelho", price: 9.90, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/259252371b941e1ca44.jpg",
+      description: "Etiqueta splash para promoções, formato estrela. Vermelho.", 
+      longDesc: "Etiqueta adesiva em formato splash, cor vermelha, ideal para destacar promoções e descontos em produtos. Papel adesivo brilhante, fácil aplicação. Tamanho aproximado 60x40mm. Envio imediato." },
+    { id: "ecs11", name: "512 UND de Etiquetas Adesivas Splash", price: 8.90, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/256906945/imagem-ilustrativa--2--qolchque8f.jpg",
+      description: "Pacote com 512 etiquetas splash em várias cores.", 
+      longDesc: "Pacote com 512 etiquetas adesivas splash em cores variadas. Perfeitas para destacar promoções e ofertas. Papel adesivo de alta qualidade, tamanho 60x40mm. Envio imediato." },
+    { id: "ecs12", name: "MX5500 neon", price: 24.90, image: "https://cdn.awsli.com.br/300x300/2492/2492037/produto/252278900bebe1e63ab.jpg",
+      description: "Etiquetas adesivas MX5500 cores neon, 12 metros.", 
+      longDesc: "Etiquetas adesivas para etiquetadora MX5500 em cores neon (amarelo, rosa, verde, laranja). Rolo com 12 metros. Papel couché, adesivo forte, ideal para chamar atenção em precificação. Envio imediato." }
+  ];
+
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  function updateCartCount() {
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const countSpan = document.getElementById('cartCount');
+    if (countSpan) countSpan.innerText = totalItems;
+  }
+
+  function addToCart(product) {
+    const existing = cart.find(item => item.id === product.id);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        image: product.image
+      });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+    alert(`${product.name} adicionado ao carrinho!`);
+  }
+
+  function renderProductDetail() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    const product = products.find(p => p.id === productId);
+    const container = document.getElementById('productDetail');
+    if (!product) {
+      container.innerHTML = '<p>Produto não encontrado.</p>';
+      return;
+    }
+    container.innerHTML = `
+      <div class="product-image">
+        <img src="${product.image}" alt="${product.name}">
+      </div>
+      <div class="product-info">
+        <h1>${product.name}</h1>
+        <span class="product-id">ID: ${product.id.toUpperCase()}</span>
+        <div class="price">R$ ${product.price.toFixed(2)}</div>
+        <div class="pix-price">ou R$ ${(product.price * 0.95).toFixed(2)} via Pix (5% off)</div>
+        <div class="description">
+          <h3>Descrição</h3>
+          <p>${product.longDesc || product.description}</p>
+        </div>
+        <button id="buyButton" class="btn btn-primary">🛒 Comprar agora</button>
+      </div>
+    `;
+    document.getElementById('buyButton').addEventListener('click', () => {
+      addToCart(product);
+      window.location.href = 'carrinho.html';
+    });
+  }
+
+  renderProductDetail();
+  updateCartCount();
+</script>
+</body>
+</html>
