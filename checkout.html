@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Etiquetas Adesivas</title>
+  <style>
+    * { margin:0; padding:0; box-sizing: border-box; }
+    :root {
+      --azul: #0a58ca;
+      --azul-escuro: #0a3b7a;
+      --mostarda: #e6b422;
+      --mostarda-escuro: #c49a0c;
+      --cinza-claro: #f8f9fa;
+      --cinza-borda: #e9ecef;
+      --branco: #ffffff;
+      --texto: #212529;
+      --shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+    }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--cinza-claro);
+      color: var(--texto);
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .top-bar {
+      background: var(--mostarda);
+      padding: 0.6rem 0;
+      text-align: center;
+    }
+    .header {
+      background: var(--branco);
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--cinza-borda);
+    }
+    .logo a {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+      color: var(--azul);
+    }
+    .logo span { color: var(--mostarda); }
+    .checkout-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    .checkout-form {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .step {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--cinza-borda);
+      padding-bottom: 1.5rem;
+    }
+    .step h2 {
+      color: var(--azul);
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid var(--cinza-borda);
+      border-radius: 0.5rem;
+      font-family: inherit;
+    }
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .order-summary {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+    .order-items {
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 1rem 0;
+    }
+    .order-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--cinza-borda);
+    }
+    .order-item img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+    }
+    .order-item-info {
+      flex: 1;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+    .payment-methods {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .payment-methods label {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+    }
+    .btn {
+      background: var(--mostarda);
+      color: #2c2c2c;
+      padding: 0.8rem;
+      width: 100%;
+      border: none;
+      border-radius: 2rem;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .btn-primary {
+      background: var(--azul);
+      color: white;
+    }
+    @media (max-width: 768px) {
+      .checkout-wrapper {
+        grid-template-columns: 1fr;
+      }
+      .row-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="top-bar"><div class="container">✔️ Finalize seu pedido com segurança</div></div>
+<header class="header"><div class="container"><div class="logo"><a href="index.html">Etiquetas <span>Adesivas</span></a></div></div></header>
+
+<div class="container">
+  <div class="checkout-wrapper">
+    <div class="checkout-form">
+      <div class="step">
+        <h2>📦 1. Endereço de entrega</h2>
+        <div class="form-group">
+          <label>CEP</label>
+          <input type="text" id="cep" placeholder="00000-000">
+        </div>
+        <div class="row-2">
+          <div class="form-group"><label>Logradouro</label><input id="street"></div>
+          <div class="form-group"><label>Número</label><input id="number"></div>
+        </div>
+        <div class="row-2">
+          <div class="form-group"><label>Bairro</label><input id="neighborhood"></div>
+          <div class="form-group"><label>Cidade</label><input id="city"></div>
+        </div>
+        <div class="form-group"><label>Estado</label><select id="state"><option value="">Selecione</option><option>SP</option><option>RJ</option><option>MG</option></select></div>
+      </div>
+
+      <div class="step">
+        <h2>🚚 2. Frete</h2>
+        <div id="shipping-options">
+          <label><input type="radio" name="shipping" value="pac" checked> PAC (R$ 15,00) - 5 a 10 dias úteis</label>
+          <label><input type="radio" name="shipping" value="sedex"> SEDEX (R$ 25,00) - 2 a 5 dias úteis</label>
+        </div>
+      </div>
+
+      <div class="step">
+        <h2>💳 3. Pagamento</h2>
+        <div class="payment-methods">
+          <label><input type="radio" name="payment" value="credit" checked> Cartão de Crédito</label>
+          <label><input type="radio" name="payment" value="pix"> Pix (5% off)</label>
+          <label><input type="radio" name="payment" value="boleto"> Boleto Bancário</label>
+        </div>
+        <div id="credit-card-fields" style="display: none;">
+          <div class="form-group"><label>Número do cartão</label><input placeholder="**** **** **** ****"></div>
+          <div class="row-2">
+            <div class="form-group"><label>Validade</label><input placeholder="MM/AA"></div>
+            <div class="form-group"><label>CVV</label><input placeholder="123"></div>
+          </div>
+        </div>
+      </div>
+
+      <button id="finalizeBtn" class="btn btn-primary">Finalizar pedido</button>
+    </div>
+
+    <div class="order-summary">
+      <h3>Resumo do pedido</h3>
+      <div id="order-items" class="order-items"></div>
+      <div class="total-row"><span>Subtotal:</span><span id="subtotal">R$ 0,00</span></div>
+      <div class="total-row"><span>Frete:</span><span id="shipping-cost">R$ 15,00</span></div>
+      <div class="total-row"><strong>Total:</strong><strong id="total">R$ 0,00</strong></div>
+      <div id="pix-discount-info" style="font-size: 0.8rem; color: #2b8c4a; margin-top: 0.5rem;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let subtotal = 0;
+  let shipping = 15;
+  let paymentMethod = 'credit';
+
+  function updateOrderSummary() {
+    subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    let total = subtotal + shipping;
+    let discount = 0;
+    if (paymentMethod === 'pix') {
+      discount = total * 0.05;
+      total = total - discount;
+    }
+    document.getElementById('subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+    document.getElementById('shipping-cost').innerText = `R$ ${shipping.toFixed(2)}`;
+    document.getElementById('total').innerText = `R$ ${total.toFixed(2)}`;
+    if (paymentMethod === 'pix') {
+      document.getElementById('pix-discount-info').innerHTML = `✨ Pix: 5% de desconto aplicado! (-R$ ${discount.toFixed(2)})`;
+    } else {
+      document.getElementById('pix-discount-info').innerHTML = '';
+    }
+  }
+
+  function renderOrderItems() {
+    const container = document.getElementById('order-items');
+    if (!cart.length) {
+      container.innerHTML = '<p>Carrinho vazio. <a href="index.html">Voltar às compras</a></p>';
+      return;
+    }
+    let html = '';
+    cart.forEach(item => {
+      html += `
+        <div class="order-item">
+          <img src="${item.image}" alt="${item.name}">
+          <div class="order-item-info">
+            <strong>${item.name}</strong><br>
+            Quantidade: ${item.quantity}<br>
+            R$ ${(item.price * item.quantity).toFixed(2)}
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+    updateOrderSummary();
+  }
+
+  // Eventos de frete
+  document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      shipping = e.target.value === 'pac' ? 15 : 25;
+      document.getElementById('shipping-cost').innerText = `R$ ${shipping.toFixed(2)}`;
+      updateOrderSummary();
+    });
+  });
+
+  // Eventos de pagamento
+  document.querySelectorAll('input[name="payment"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      paymentMethod = e.target.value;
+      const creditFields = document.getElementById('credit-card-fields');
+      if (paymentMethod === 'credit') {
+        creditFields.style.display = 'block';
+      } else {
+        creditFields.style.display = 'none';
+      }
+      updateOrderSummary();
+    });
+  });
+
+  // Finalizar pedido
+  document.getElementById('finalizeBtn').addEventListener('click', () => {
+    const required = ['cep', 'street', 'number', 'neighborhood', 'city'];
+    let missing = false;
+    required.forEach(field => {
+      if (!document.getElementById(field).value.trim()) missing = true;
+    });
+    if (missing) {
+      alert('Preencha todos os campos do endereço.');
+      return;
+    }
+    if (!document.querySelector('input[name="shipping"]:checked')) {
+      alert('Selecione uma opção de frete.');
+      return;
+    }
+    if (paymentMethod === 'credit' && !document.querySelector('#credit-card-fields input')) {
+      alert('Preencha os dados do cartão.');
+      return;
+    }
+
+    // Simular finalização
+    alert(`Pedido finalizado com sucesso! Total: ${document.getElementById('total').innerText}\nMétodo: ${paymentMethod.toUpperCase()}`);
+    localStorage.removeItem('cart');
+    window.location.href = 'index.html';
+  });
+
+  // Inicializar
+  renderOrderItems();
+</script>
+</body>
+</html>
