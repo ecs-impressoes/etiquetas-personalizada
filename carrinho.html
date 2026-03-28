@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Meu Carrinho</title>
+  <style>
+    /* Copie os estilos básicos do index.html ou crie um arquivo separado */
+    body { font-family: system-ui; background: #f8f9fa; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .cart-item { display: flex; gap: 1rem; border-bottom: 1px solid #ddd; padding: 1rem 0; }
+    .cart-item img { width: 80px; }
+    .cart-total { font-size: 1.5rem; font-weight: bold; margin: 1rem 0; }
+    button { background: #e6b422; border: none; padding: 0.75rem 1.5rem; border-radius: 2rem; cursor: pointer; }
+    .btn-checkout { background: #0a58ca; color: white; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Seu Carrinho</h1>
+  <div id="cart-items"></div>
+  <div id="cart-total" class="cart-total"></div>
+  <button id="checkout-btn" class="btn-checkout">Finalizar Compra</button>
+  <a href="index.html">← Continuar comprando</a>
+</div>
+
+<script>
+  // Carregar carrinho do localStorage
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const container = document.getElementById('cart-items');
+  const totalSpan = document.getElementById('cart-total');
+
+  function renderCart() {
+    if (cart.length === 0) {
+      container.innerHTML = '<p>Seu carrinho está vazio.</p>';
+      totalSpan.innerHTML = '';
+      return;
+    }
+    let html = '';
+    let total = 0;
+    cart.forEach((item, index) => {
+      total += item.price * item.quantity;
+      html += `
+        <div class="cart-item">
+          <img src="${item.image || 'https://placehold.co/80x80'}" alt="${item.name}">
+          <div>
+            <strong>${item.name}</strong><br>
+            R$ ${item.price.toFixed(2)} x ${item.quantity} = R$ ${(item.price * item.quantity).toFixed(2)}
+            <button class="remove-item" data-index="${index}">Remover</button>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+    totalSpan.innerHTML = `Total: R$ ${total.toFixed(2)}`;
+
+    // Eventos para remover itens
+    document.querySelectorAll('.remove-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(btn.dataset.index);
+        cart.splice(idx, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+      });
+    });
+  }
+
+  renderCart();
+
+  // Botão finalizar compra
+  document.getElementById('checkout-btn').addEventListener('click', () => {
+    if (cart.length === 0) return alert('Carrinho vazio');
+    // Salvar carrinho no sessionStorage para usar no checkout
+    sessionStorage.setItem('checkoutCart', JSON.stringify(cart));
+    window.location.href = 'checkout.html';
+  });
+</script>
+</body>
+</html>
