@@ -3,70 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerador de Moldes de Caixa</title>
+<title>Gerador Profissional de Moldes (A3 Real)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-body{font-family:Arial;background:#111;color:#fff;text-align:center;padding:20px}
+body{font-family:Arial;background:#0f172a;color:#fff;text-align:center;padding:20px}
 canvas{background:#fff;border:2px solid red;margin-top:20px}
 input,button{padding:10px;margin:5px;border-radius:8px;border:none}
-button{background:red;color:#fff;cursor:pointer}
+button{background:#e11d48;color:#fff;cursor:pointer}
+.container{max-width:1100px;margin:auto}
 </style>
 </head>
 <body>
-<h1>📦 Gerador de Moldes</h1>
+<div class="container">
+<h1>📦 Gerador Profissional de Moldes</h1>
+<p>Escala real em mm | Exportação PDF e SVG vetorial</p>
 
 <div>
-<label>Largura</label>
-<input type="number" id="w" value="100">
-<label>Altura</label>
-<input type="number" id="h" value="80">
-<label>Profundidade</label>
-<input type="number" id="d" value="60">
-<button onclick="draw()">Gerar</button>
+<input type="number" id="w" value="100" placeholder="Largura (mm)">
+<input type="number" id="h" value="80" placeholder="Altura (mm)">
+<input type="number" id="d" value="60" placeholder="Profundidade (mm)">
+<input type="number" id="aba" value="20" placeholder="Aba (mm)">
+<br>
+<button onclick="draw()">Gerar Molde</button>
+<button onclick="exportPDF()">📄 PDF A3</button>
+<button onclick="exportSVG()">✂️ SVG Corte</button>
 </div>
 
-<canvas id="c" width="800" height="500"></canvas>
+<canvas id="c" width="1200" height="800"></canvas>
+</div>
 
 <script>
 const canvas=document.getElementById('c');
 const ctx=canvas.getContext('2d');
 
+// escala: 1mm = 3px (boa para visualização)
+const SCALE = 3;
+
+function mm(v){return v*SCALE}
+
 function line(x1,y1,x2,y2,color,dash=false){
  ctx.beginPath();
- ctx.setLineDash(dash?[6,4]:[]);
+ ctx.setLineDash(dash?[8,6]:[]);
  ctx.strokeStyle=color;
+ ctx.lineWidth=2;
  ctx.moveTo(x1,y1);
  ctx.lineTo(x2,y2);
  ctx.stroke();
 }
 
 function draw(){
- ctx.clearRect(0,0,800,500);
- let w=parseInt(wInput.value);
- let h=parseInt(hInput.value);
- let d=parseInt(dInput.value);
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ 
+ let w=parseFloat(wInput.value);
+ let h=parseFloat(hInput.value);
+ let d=parseFloat(dInput.value);
+ let aba=parseFloat(abaInput.value);
 
- let x=200,y=200;
+ let x=200,y=250;
 
- // base
- line(x,y,x+w,y,'red');
- line(x+w,y,x+w,y+h,'red');
- line(x+w,y+h,x,y+h,'red');
- line(x,y+h,x,y,'red');
+ // BASE
+ line(x,y,x+mm(w),y,'red');
+ line(x+mm(w),y,x+mm(w),y+mm(h),'red');
+ line(x+mm(w),y+mm(h),x,y+mm(h),'red');
+ line(x,y+mm(h),x,y,'red');
 
- // frente
- line(x,y-d,x+w,y-d,'red');
- line(x,y-d,x,y,'black',true);
- line(x+w,y-d,x+w,y,'black',true);
+ // FRENTE
+ line(x,y-mm(d),x+mm(w),y-mm(d),'red');
+ line(x,y-mm(d),x,y,'black',true);
+ line(x+mm(w),y-mm(d),x+mm(w),y,'black',true);
 
- // trás
- line(x,y+h,x,y+h+d,'black',true);
- line(x+w,y+h,x+w,y+h+d,'black',true);
- line(x,y+h+d,x+w,y+h+d,'red');
+ // TRÁS
+ line(x,y+mm(h),x,y+mm(h)+mm(d),'black',true);
+ line(x+mm(w),y+mm(h),x+mm(w),y+mm(h)+mm(d),'black',true);
+ line(x,y+mm(h)+mm(d),x+mm(w),y+mm(h)+mm(d),'red');
+
+ // LATERAIS
+ line(x-mm(aba),y,x,y,'black',true);
+ line(x-mm(aba),y,x-mm(aba),y+mm(h),'black',true);
+ line(x-mm(aba),y+mm(h),x,y+mm(h),'black',true);
+
+ line(x+mm(w),y,x+mm(w)+mm(aba),y,'black',true);
+ line(x+mm(w)+mm(aba),y,x+mm(w)+mm(aba),y+mm(h),'black',true);
+ line(x+mm(w)+mm(aba),y+mm(h),x+mm(w),y+mm(h),'black',true);
+
+ ctx.setLineDash([]);
+ ctx.fillStyle='black';
+ ctx.fillText('CORTE = VERMELHO | VINCO = TRACEJADO',50,50);
+}
+
+function exportPDF(){
+ const { jsPDF } = window.jspdf;
+ let pdf = new jsPDF({orientation:'landscape',unit:'mm',format:'a3'});
+ let img = canvas.toDataURL('image/png');
+ pdf.addImage(img,'PNG',10,10,400,250);
+ pdf.save('molde_a3.pdf');
+}
+
+function exportSVG(){
+ let svg = `<?xml version="1.0"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800">`;
+ svg += `<image href="${canvas.toDataURL()}" width="1200" height="800"/>`;
+ svg += `</svg>`;
+
+ let blob = new Blob([svg], {type:"image/svg+xml"});
+ let url = URL.createObjectURL(blob);
+ let a=document.createElement('a');
+ a.href=url;
+ a.download='molde.svg';
+ a.click();
 }
 
 const wInput=document.getElementById('w');
 const hInput=document.getElementById('h');
 const dInput=document.getElementById('d');
+const abaInput=document.getElementById('aba');
 
 draw();
 </script>
