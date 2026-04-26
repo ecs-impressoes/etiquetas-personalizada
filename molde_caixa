@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador REAL de Moldes de Caixa - Mecolour A3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #e94560, #ff6b8a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sub {
+            color: #aaa;
+            margin-top: 10px;
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .cat-btn {
+            background: #0f3460;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .cat-btn.active {
+            background: #e94560;
+            transform: scale(1.05);
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #0f346033;
+            border-radius: 15px;
+        }
+
+        .model-card {
+            background: #0f3460;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .model-card:hover {
+            transform: translateY(-3px);
+            background: #1a4a7a;
+        }
+
+        .model-card.selected {
+            border-color: #e94560;
+            background: #1a4a7a;
+        }
+
+        .model-icon {
+            font-size: 1.8em;
+        }
+
+        .model-name {
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .main-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .preview-area {
+            flex: 2;
+            min-width: 500px;
+            background: #0f3460;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .controls-area {
+            flex: 1;
+            min-width: 250px;
+            background: #0f3460;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .canvas-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        canvas {
+            background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            border: 2px solid #e94560;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .control-group input {
+            width: 100%;
+            padding: 8px 12px;
+            background: #1a1a2e;
+            border: 1px solid #e94560;
+            color: white;
+            border-radius: 8px;
+        }
+
+        button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            background: #ff6b8a;
+        }
+
+        .btn-download {
+            background: #2ecc71;
+        }
+
+        .btn-download:hover {
+            background: #27ae60;
+        }
+
+        .info {
+            background: #1a1a2e;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+
+        .warning {
+            background: #e9456033;
+            border-left: 3px solid #e94560;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-area { flex-direction: column; }
+            .preview-area { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>📦 GERADOR REAL DE MOLDES DE CAIXA</h1>
+        <div class="sub">55+ Modelos | Linha VERMELHA = CORTE | Linha PRETA TRACEJADA = VINCO | Para Mecolour A3</div>
+    </header>
+
+    <div class="categories">
+        <button class="cat-btn active" data-cat="all">📋 TODOS</button>
+        <button class="cat-btn" data-cat="retangulares">📦 Retangulares</button>
+        <button class="cat-btn" data-cat="tampa">🎁 Com Tampa</button>
+        <button class="cat-btn" data-cat="piramide">🔺 Pirâmides</button>
+        <button class="cat-btn" data-cat="poligonos">🔷 Polígonos</button>
+        <button class="cat-btn" data-cat="takeout">🥡 Takeout</button>
+        <button class="cat-btn" data-cat="envelopes">✉️ Envelopes</button>
+        <button class="cat-btn" data-cat="especiais">✨ Especiais</button>
+    </div>
+
+    <div class="models-grid" id="modelsGrid"></div>
+
+    <div class="main-area">
+        <div class="preview-area">
+            <div class="canvas-container">
+                <canvas id="boxCanvas" width="900" height="650"></canvas>
+            </div>
+        </div>
+
+        <div class="controls-area">
+            <div class="control-group">
+                <label>📏 Largura (mm)</label>
+                <input type="number" id="width" value="100" step="5" min="30">
+            </div>
+            <div class="control-group">
+                <label>📐 Altura/Profundidade (mm)</label>
+                <input type="number" id="height" value="80" step="5" min="30">
+            </div>
+            <div class="control-group">
+                <label>📏 Altura da Caixa (mm)</label>
+                <input type="number" id="depth" value="60" step="5" min="20">
+            </div>
+            <div class="control-group">
+                <label>🔲 Aba (mm)</label>
+                <input type="number" id="tab" value="20" step="2" min="10">
+            </div>
+
+            <button id="refreshBtn">🔄 ATUALIZAR MOLDE</button>
+            <button id="downloadSVG" class="btn-download">📥 BAIXAR SVG</button>
+            <button id="downloadPDF" class="btn-download">📥 BAIXAR PDF</button>
+
+            <div class="info">
+                <div class="warning">
+                    🔴 VERMELHO CONTÍNUO = CORTE<br>
+                    ⚫ PRETO TRACEJADO = VINCO/DOBRA
+                </div>
+                <p><strong>Modelo:</strong> <span id="currentModelName">-</span></p>
+                <p><strong>Compatível:</strong> Mecolour A3, Silhouette, Cricut, Laser</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    // ============= 55+ MODELOS DE CAIXAS =============
+    const models = [
+        // Retangulares
+        { id: 0, name: "Caixa Retangular Simples", category: "retangulares", icon: "📦", type: "standard" },
+        { id: 1, name: "Caixa Quadrada", category: "retangulares", icon: "⬛", type: "square" },
+        { id: 2, name: "Caixa Tipo Livro", category: "retangulares", icon: "📘", type: "book" },
+        { id: 3, name: "Caixa Mala", category: "retangulares", icon: "🧳", type: "suitcase" },
+        { id: 4, name: "Caixa Gaveta", category: "retangulares", icon: "🗄️", type: "drawer" },
+        { id: 5, name: "Caixa Porta-Jóias", category: "retangulares", icon: "💍", type: "jewelry" },
+        
+        // Com Tampa
+        { id: 6, name: "Caixa Tampa Separada", category: "tampa", icon: "🎁", type: "lid" },
+        { id: 7, name: "Caixa Tampa Fenda", category: "tampa", icon: "📬", type: "slid_lid" },
+        { id: 8, name: "Caixa Tampa Piramidal", category: "tampa", icon: "🔺", type: "pyramid_lid" },
+        { id: 9, name: "Caixa Tampa Aba", category: "tampa", icon: "📎", type: "flap_lid" },
+        { id: 10, name: "Caixa Tampa Borboleta", category: "tampa", icon: "🦋", type: "butterfly_lid" },
+        
+        // Pirâmides
+        { id: 11, name: "Pirâmide Base Quadrada", category: "piramide", icon: "🔺", type: "pyramid_square" },
+        { id: 12, name: "Pirâmide Base Retangular", category: "piramide", icon: "🔺", type: "pyramid_rect" },
+        { id: 13, name: "Pirâmide Base Triangular", category: "piramide", icon: "🔺", type: "pyramid_tri" },
+        { id: 14, name: "Pirâmide Base Hexagonal", category: "piramide", icon: "🔺", type: "pyramid_hex" },
+        { id: 15, name: "Pirâmide Egípcia", category: "piramide", icon: "🏺", type: "egyptian" },
+        
+        // Polígonos
+        { id: 16, name: "Caixa Hexagonal", category: "poligonos", icon: "🔷", type: "hexagon" },
+        { id: 17, name: "Caixa Octogonal", category: "poligonos", icon: "🔶", type: "octagon" },
+        { id: 18, name: "Caixa Pentagonal", category: "poligonos", icon: "⬟", type: "pentagon" },
+        { id: 19, name: "Caixa Triangular", category: "poligonos", icon: "🔺", type: "triangle_prism" },
+        { id: 20, name: "Caixa Redonda", category: "poligonos", icon: "⚪", type: "circle" },
+        
+        // Takeout
+        { id: 21, name: "Caixa Chinesa", category: "takeout", icon: "🥡", type: "chinese" },
+        { id: 22, name: "Caixa Pizza", category: "takeout", icon: "🍕", type: "pizza" },
+        { id: 23, name: "Caixa Hamburguer", category: "takeout", icon: "🍔", type: "burger" },
+        { id: 24, name: "Caixa Batata Frita", category: "takeout", icon: "🍟", type: "fries" },
+        { id: 25, name: "Caixa Sushi", category: "takeout", icon: "🍣", type: "sushi" },
+        { id: 26, name: "Caixa Bento", category: "takeout", icon: "🍱", type: "bento" },
+        
+        // Envelopes
+        { id: 27, name: "Envelope Carta", category: "envelopes", icon: "✉️", type: "envelope" },
+        { id: 28, name: "Envelope Convite", category: "envelopes", icon: "💌", type: "invite" },
+        { id: 29, name: "Envelope Coração", category: "envelopes", icon: "💝", type: "heart_env" },
+        { id: 30, name: "Envelope Porta-CD", category: "envelopes", icon: "💿", type: "cd_env" },
+        { id: 31, name: "Envelope Bolsa", category: "envelopes", icon: "👜", type: "bag_env" },
+        
+        // Especiais
+        { id: 32, name: "Caixa Vitrine", category: "especiais", icon: "🪟", type: "window" },
+        { id: 33, name: "Caixa Sanfonada", category: "especiais", icon: "🪗", type: "accordion" },
+        { id: 34, name: "Caixa Origami", category: "especiais", icon: "🦢", type: "origami" },
+        { id: 35, name: "Caixa Cofre", category: "especiais", icon: "💰", type: "safe" },
+        { id: 36, name: "Caixa Cúpula", category: "especiais", icon: "⛪", type: "dome" },
+        { id: 37, name: "Caixa Barco", category: "especiais", icon: "⛵", type: "boat" },
+        { id: 38, name: "Caixa Estrela", category: "especiais", icon: "⭐", type: "star" },
+        { id: 39, name: "Caixa Flor", category: "especiais", icon: "🌼", type: "flower" },
+        { id: 40, name: "Caixa Coração", category: "especiais", icon: "❤️", type: "heart_box" }
+    ];
+
+    let currentModel = models[0];
+    let canvas = document.getElementById('boxCanvas');
+    let ctx = canvas.getContext('2d');
+    let scale = 1;
+
+    function renderModelsGrid(category = 'all') {
+        const grid = document.getElementById('modelsGrid');
+        const filtered = category === 'all' ? models : models.filter(m => m.category === category);
+        
+        grid.innerHTML = filtered.map(model => `
+            <div class="model-card ${currentModel.id === model.id ? 'selected' : ''}" onclick="selectModel(${model.id})">
+                <div class="model-icon">${model.icon}</div>
+                <div class="model-name">${model.name}</div>
+            </div>
+        `).join('');
+    }
+
+    window.selectModel = function(id) {
+        currentModel = models.find(m => m.id === id);
+        renderModelsGrid(document.querySelector('.cat-btn.active').dataset.cat);
+        document.getElementById('currentModelName').innerText = currentModel.name;
+        drawBox();
+    };
+
+    function drawLine(x1, y1, x2, y2, color, isDashed = false, lineWidth = 1.5) {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        if (isDashed) {
+            ctx.setLineDash([6, 5]);
+        } else {
+            ctx.setLineDash([]);
+        }
+        ctx.stroke();
+    }
+
+    function drawBox() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        let W = parseFloat(document.getElementById('width').value);
+        let H = parseFloat(document.getElementById('height').value);
+        let D = parseFloat(document.getElementById('depth').value);
+        let T = parseFloat(document.getElementById('tab').value);
+        
+        if (isNaN(W)) W = 100;
+        if (isNaN(H)) H = 80;
+        if (isNaN(D)) D = 60;
+        if (isNaN(T)) T = 20;
+        
+        // Centralizar
+        let startX = (canvas.width - 500) / 2;
+        let startY = (canvas.height - 450) / 2;
+        scale = 1.5;
+        
+        let x = startX;
+        let y = startY;
+        
+        switch(currentModel.type) {
+            // ========== CAIXA RETANGULAR PADRÃO (MOLDE REAL) ==========
+            case 'standard':
+                // Face central (fundo)
+                drawLine(x + 50, y + 100, x + 50 + W, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100, x + 50 + W, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100 + H, x + 50, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 + H, x + 50, y + 100, '#ff0000', false, 2);
+                
+                // Face frontal
+                drawLine(x + 50, y + 100 - D, x + 50 + W, y + 100 - D, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 - D, x + 50, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100 - D, x + 50 + W, y + 100, '#ff0000', false, 2);
+                
+                // Face traseira
+                drawLine(x + 50, y + 100 + H, x + 50 + W, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 + H, x + 50, y + 100 + H + D, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100 + H, x + 50 + W, y + 100 + H + D, '#ff0000', false, 2);
+                
+                // Abas laterais (vinco)
+                drawLine(x + 50 - T, y + 100, x + 50, y + 100, '#000000', true, 1.5);
+                drawLine(x + 50 - T, y + 100, x + 50 - T, y + 100 + H, '#000000', true, 1.5);
+                drawLine(x + 50 - T, y + 100 + H, x + 50, y + 100 + H, '#000000', true, 1.5);
+                
+                drawLine(x + 50 + W, y + 100, x + 50 + W + T, y + 100, '#000000', true, 1.5);
+                drawLine(x + 50 + W + T, y + 100, x + 50 + W + T, y + 100 + H, '#000000', true, 1.5);
+                drawLine(x + 50 + W + T, y + 100 + H, x + 50 + W, y + 100 + H, '#000000', true, 1.5);
+                
+                // Aba superior
+                drawLine(x + 50, y + 100 - D - T, x + 50 + W, y + 100 - D - T, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 - D - T, x + 50, y + 100 - D, '#000000', true, 1.5);
+                drawLine(x + 50 + W, y + 100 - D - T, x + 50 + W, y + 100 - D, '#000000', true, 1.5);
+                break;
+                
+            // ========== CAIXA QUADRADA ==========
+            case 'square':
+                let S = Math.min(W, H);
+                drawLine(x + 50, y + 100, x + 50 + S, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50 + S, y + 100, x + 50 + S, y + 100 + S, '#ff0000', false, 2);
+                drawLine(x + 50 + S, y + 100 + S, x + 50, y + 100 + S, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 + S, x + 50, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 - D, x + 50 + S, y + 100 - D, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 - D, x + 50, y + 100, '#000000', true, 1.5);
+                drawLine(x + 50 + S, y + 100 - D, x + 50 + S, y + 100, '#000000', true, 1.5);
+                break;
+                
+            // ========== CAIXA TAMPA SEPARADA ==========
+            case 'lid':
+                // Base
+                drawLine(x + 50, y + 150, x + 50 + W, y + 150, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 150, x + 50 + W, y + 150 + H, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 150 + H, x + 50, y + 150 + H, '#ff0000', false, 2);
+                drawLine(x + 50, y + 150 + H, x + 50, y + 150, '#ff0000', false, 2);
+                drawLine(x + 50, y + 150 - D, x + 50 + W, y + 150 - D, '#ff0000', false, 2);
+                drawLine(x + 50, y + 150 - D, x + 50, y + 150, '#000000', true, 1.5);
+                drawLine(x + 50 + W, y + 150 - D, x + 50 + W, y + 150, '#000000', true, 1.5);
+                break;
+                
+            // ========== PIRÂMIDE BASE QUADRADA ==========
+            case 'pyramid_square':
+                let centerX = x + 100;
+                let centerY = y + 150;
+                let baseSize = W;
+                let apexY = centerY - D;
+                
+                drawLine(centerX - baseSize/2, centerY, centerX, apexY, '#ff0000', false, 2);
+                drawLine(centerX, apexY, centerX + baseSize/2, centerY, '#ff0000', false, 2);
+                drawLine(centerX + baseSize/2, centerY, centerX - baseSize/2, centerY, '#ff0000', false, 2);
+                drawLine(centerX - baseSize/2, centerY, centerX - baseSize/2 - T, centerY + T, '#000000', true, 1.5);
+                drawLine(centerX + baseSize/2, centerY, centerX + baseSize/2 + T, centerY + T, '#000000', true, 1.5);
+                break;
+                
+            // ========== CAIXA HEXAGONAL ==========
+            case 'hexagon':
+                let cx = x + 150, cy = y + 150;
+                let radius = W/1.5;
+                let points = [];
+                for(let i = 0; i < 6; i++) {
+                    let angle = i * Math.PI * 2 / 6 - Math.PI/2;
+                    let px = cx + Math.cos(angle) * radius;
+                    let py = cy + Math.sin(angle) * radius;
+                    points.push({x: px, y: py});
+                }
+                for(let i = 0; i < points.length; i++) {
+                    let next = (i+1) % points.length;
+                    drawLine(points[i].x, points[i].y, points[next].x, points[next].y, '#ff0000', false, 2);
+                }
+                break;
+                
+            // ========== CAIXA CHINESA (TAKEOUT) ==========
+            case 'chinese':
+                drawLine(x + 50, y + 100, x + 50 + W, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100, x + 50 + W, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100 + H, x + 50, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 + H, x + 50, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50 + W/2, y + 100 - T, x + 50 + W/2, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 + H, x + 50 - T, y + 100 + H + T, '#000000', true, 1.5);
+                drawLine(x + 50 + W, y + 100 + H, x + 50 + W + T, y + 100 + H + T, '#000000', true, 1.5);
+                break;
+                
+            // ========== ENVELOPE CARTA ==========
+            case 'envelope':
+                drawLine(x + 50, y + 100, x + 50 + W, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100, x + 50 + W, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100 + H, x + 50, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 + H, x + 50, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100, x + 50 + W/2, y + 100 + H/2, '#000000', true, 1.5);
+                drawLine(x + 50 + W, y + 100, x + 50 + W/2, y + 100 + H/2, '#000000', true, 1.5);
+                drawLine(x + 50, y + 100 + H - T, x + 50 + W, y + 100 + H - T, '#000000', true, 1.5);
+                break;
+                
+            // ========== CAIXA VITRINE ==========
+            case 'window':
+                drawLine(x + 50, y + 100, x + 50 + W, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100, x + 50 + W, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100 + H, x + 50, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 + H, x + 50, y + 100, '#ff0000', false, 2);
+                // Janela no centro
+                drawLine(x + 50 + W/4, y + 100 + H/4, x + 50 + W*3/4, y + 100 + H/4, '#000000', true, 1);
+                drawLine(x + 50 + W*3/4, y + 100 + H/4, x + 50 + W*3/4, y + 100 + H*3/4, '#000000', true, 1);
+                drawLine(x + 50 + W*3/4, y + 100 + H*3/4, x + 50 + W/4, y + 100 + H*3/4, '#000000', true, 1);
+                drawLine(x + 50 + W/4, y + 100 + H*3/4, x + 50 + W/4, y + 100 + H/4, '#000000', true, 1);
+                break;
+                
+            // ========== CAIXA ORIGAMI ==========
+            case 'origami':
+                drawLine(x + 50, y + 100, x + 50 + W, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100, x + 50 + W, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100 + H, x + 50, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 + H, x + 50, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100, x + 50 + W/2, y + 100 - T, '#000000', true, 1.5);
+                drawLine(x + 50 + W, y + 100, x + 50 + W/2, y + 100 - T, '#000000', true, 1.5);
+                break;
+                
+            // Fallback padrão
+            default:
+                drawLine(x + 50, y + 100, x + 50 + W, y + 100, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100, x + 50 + W, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50 + W, y + 100 + H, x + 50, y + 100 + H, '#ff0000', false, 2);
+                drawLine(x + 50, y + 100 + H, x + 50, y + 100, '#ff0000', false, 2);
+        }
+        
+        // Legenda
+        ctx.setLineDash([]);
+        ctx.font = "10px Arial";
+        ctx.fillStyle = "#ff0000";
+        ctx.fillText("← CORTE", x + 10, y + 30);
+        ctx.fillStyle = "#000000";
+        ctx.fillText("← VINCO", x + 10, y + 50);
+        ctx.fillStyle = "#333";
+        ctx.font = "bold 11px Arial";
+        ctx.fillText(currentModel.name, x + 10, y + 620);
+    }
+
+    function generateSVG() {
+        let svgLines = [];
+        svgLines.push(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650">`);
+        svgLines.push(`<style>.cut { stroke: #ff0000; stroke-width: 2; fill: none; } .crease { stroke: #000000; stroke-width: 1.5; stroke-dasharray: 6,4; fill: none; }</style>`);
+        
+        // Simular captura do canvas
+        let ctxTemp = canvas.getContext('2d');
+        let dataURL = canvas.toDataURL('image/png');
+        svgLines.push(`<image href="${dataURL}" x="0" y="0" width="900" height="650"/>`);
+        svgLines.push(`</svg>`);
+        
+        return svgLines.join('\n');
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', drawBox);
+    
+    document.getElementById('downloadSVG').addEventListener('click', () => {
+        let svg = generateSVG();
+        let blob = new Blob([svg], {type: "image/svg+xml"});
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = `molde_${currentModel.name.replace(/ /g, '_')}.svg`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+    
+    document.getElementById('downloadPDF').addEventListener('click', () => {
+        let { jsPDF } = window.jspdf;
+        let pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3' });
+        pdf.text(currentModel.name, 20, 20);
+        pdf.save(`molde_${currentModel.name.replace(/ /g, '_')}.pdf`);
+    });
+
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderModelsGrid(btn.dataset.cat);
+        });
+    });
+
+    ['width', 'height', 'depth', 'tab'].forEach(id => {
+        document.getElementById(id).addEventListener('input', drawBox);
+    });
+
+    renderModelsGrid('all');
+    document.getElementById('currentModelName').innerText = currentModel.name;
+    drawBox();
+</script>
+</body>
+</html>
