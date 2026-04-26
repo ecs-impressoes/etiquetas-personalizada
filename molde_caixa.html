@@ -3,119 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerador Profissional de Moldes (A3 Real)</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<title>ECS Gráfica - Gerador + Pedido</title>
 <style>
 body{font-family:Arial;background:#0f172a;color:#fff;text-align:center;padding:20px}
-canvas{background:#fff;border:2px solid red;margin-top:20px}
-input,button{padding:10px;margin:5px;border-radius:8px;border:none}
-button{background:#e11d48;color:#fff;cursor:pointer}
 .container{max-width:1100px;margin:auto}
+canvas{background:#fff;border:2px solid red;margin-top:20px}
+input,select,button{padding:10px;margin:5px;border-radius:8px;border:none}
+button{background:#e11d48;color:#fff;cursor:pointer}
+.box{background:#1e293b;padding:15px;border-radius:10px;margin-top:15px}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>📦 Gerador Profissional de Moldes</h1>
-<p>Escala real em mm | Exportação PDF e SVG vetorial</p>
+<h1>📦 ECS Gráfica Rápida</h1>
+<p>Monte sua caixa e faça o pedido online</p>
 
-<div>
-<input type="number" id="w" value="100" placeholder="Largura (mm)">
-<input type="number" id="h" value="80" placeholder="Altura (mm)">
-<input type="number" id="d" value="60" placeholder="Profundidade (mm)">
-<input type="number" id="aba" value="20" placeholder="Aba (mm)">
+<div class="box">
+<input type="number" id="w" placeholder="Largura (mm)" value="100">
+<input type="number" id="h" placeholder="Altura (mm)" value="80">
+<input type="number" id="d" placeholder="Profundidade (mm)" value="60">
+<select id="tipo">
+<option value="pb">Preto e Branco</option>
+<option value="color">Colorido</option>
+</select>
 <br>
 <button onclick="draw()">Gerar Molde</button>
-<button onclick="exportPDF()">📄 PDF A3</button>
-<button onclick="exportSVG()">✂️ SVG Corte</button>
 </div>
 
-<canvas id="c" width="1200" height="800"></canvas>
+<canvas id="c" width="900" height="500"></canvas>
+
+<div class="box">
+<h2>💰 Valor: R$ <span id="valor">0.00</span></h2>
+<button onclick="fazerPedido()">📲 Fazer Pedido</button>
+</div>
+
 </div>
 
 <script>
 const canvas=document.getElementById('c');
 const ctx=canvas.getContext('2d');
-
-// escala: 1mm = 3px (boa para visualização)
-const SCALE = 3;
+const SCALE=3;
 
 function mm(v){return v*SCALE}
 
 function line(x1,y1,x2,y2,color,dash=false){
  ctx.beginPath();
- ctx.setLineDash(dash?[8,6]:[]);
+ ctx.setLineDash(dash?[6,4]:[]);
  ctx.strokeStyle=color;
- ctx.lineWidth=2;
  ctx.moveTo(x1,y1);
  ctx.lineTo(x2,y2);
  ctx.stroke();
 }
 
+function calcularPreco(area, tipo){
+ let precoBase = tipo==='color'?0.30:0.19;
+ return (area/100)*precoBase + 2; // margem
+}
+
 function draw(){
- ctx.clearRect(0,0,canvas.width,canvas.height);
- 
+ ctx.clearRect(0,0,900,500);
  let w=parseFloat(wInput.value);
  let h=parseFloat(hInput.value);
  let d=parseFloat(dInput.value);
- let aba=parseFloat(abaInput.value);
+ let tipo=tipoInput.value;
 
- let x=200,y=250;
+ let x=200,y=200;
 
- // BASE
  line(x,y,x+mm(w),y,'red');
  line(x+mm(w),y,x+mm(w),y+mm(h),'red');
  line(x+mm(w),y+mm(h),x,y+mm(h),'red');
  line(x,y+mm(h),x,y,'red');
 
- // FRENTE
- line(x,y-mm(d),x+mm(w),y-mm(d),'red');
- line(x,y-mm(d),x,y,'black',true);
- line(x+mm(w),y-mm(d),x+mm(w),y,'black',true);
-
- // TRÁS
- line(x,y+mm(h),x,y+mm(h)+mm(d),'black',true);
- line(x+mm(w),y+mm(h),x+mm(w),y+mm(h)+mm(d),'black',true);
- line(x,y+mm(h)+mm(d),x+mm(w),y+mm(h)+mm(d),'red');
-
- // LATERAIS
- line(x-mm(aba),y,x,y,'black',true);
- line(x-mm(aba),y,x-mm(aba),y+mm(h),'black',true);
- line(x-mm(aba),y+mm(h),x,y+mm(h),'black',true);
-
- line(x+mm(w),y,x+mm(w)+mm(aba),y,'black',true);
- line(x+mm(w)+mm(aba),y,x+mm(w)+mm(aba),y+mm(h),'black',true);
- line(x+mm(w)+mm(aba),y+mm(h),x+mm(w),y+mm(h),'black',true);
-
- ctx.setLineDash([]);
- ctx.fillStyle='black';
- ctx.fillText('CORTE = VERMELHO | VINCO = TRACEJADO',50,50);
+ let area = (w*h)/100;
+ let valor = calcularPreco(area,tipo);
+ document.getElementById('valor').innerText = valor.toFixed(2);
 }
 
-function exportPDF(){
- const { jsPDF } = window.jspdf;
- let pdf = new jsPDF({orientation:'landscape',unit:'mm',format:'a3'});
- let img = canvas.toDataURL('image/png');
- pdf.addImage(img,'PNG',10,10,400,250);
- pdf.save('molde_a3.pdf');
-}
+function fazerPedido(){
+ let w=wInput.value;
+ let h=hInput.value;
+ let d=dInput.value;
+ let valor=document.getElementById('valor').innerText;
 
-function exportSVG(){
- let svg = `<?xml version="1.0"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800">`;
- svg += `<image href="${canvas.toDataURL()}" width="1200" height="800"/>`;
- svg += `</svg>`;
-
- let blob = new Blob([svg], {type:"image/svg+xml"});
- let url = URL.createObjectURL(blob);
- let a=document.createElement('a');
- a.href=url;
- a.download='molde.svg';
- a.click();
+ let msg = `Pedido ECS Gráfica:%0A📦 Caixa ${w}x${h}x${d}mm%0A💰 R$ ${valor}`;
+ window.open(`https://wa.me/5513988089754?text=${msg}`,'_blank');
 }
 
 const wInput=document.getElementById('w');
 const hInput=document.getElementById('h');
 const dInput=document.getElementById('d');
-const abaInput=document.getElementById('aba');
+const tipoInput=document.getElementById('tipo');
+
+wInput.oninput=draw;
+hInput.oninput=draw;
+dInput.oninput=draw;
+tipoInput.onchange=draw;
 
 draw();
 </script>
