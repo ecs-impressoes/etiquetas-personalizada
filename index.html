@@ -809,7 +809,7 @@
           <option value="fosco">Fosco</option>
         </select>
       </div>
-      <div class="filter-note">Folha de produção: 32 × 45 cm</div>
+      <div class="filter-note">Folha A4 · área útil 20 × 28,5 cm · espaçamento 2 mm</div>
     </div>
 
     <div class="summary" id="summary">
@@ -834,60 +834,16 @@
 
     <!-- Análise de quantidade por folha -->
     <section class="analysis-section">
-      <h2>Análise: quantidade por folha</h2>
+      <h2>Análise: quantidade por folha A4</h2>
       <p>
-        Cálculo baseado em folha de produção <strong>32 × 45 cm</strong>
-        (área útil ~31 × 44 cm), com espaçamento de 0,3 cm entre adesivos e margem de 0,5 cm nas bordas.
-        Quanto mais unidades cabem por folha, menor o custo unitário.
+        Folha <strong>A4 (21 × 29,7 cm)</strong> · área de impressão <strong>20 × 28,5 cm</strong> ·
+        espaçamento <strong>2 mm</strong> entre etiquetas (horizontal e vertical).
+        Fórmula: colunas = piso((20 + 0,2) ÷ (largura + 0,2)) · linhas = piso((28,5 + 0,2) ÷ (altura + 0,2)).
+        Retângulos usam a melhor orientação.
       </p>
 
-      <h3 style="font-size:1rem; margin-bottom:0.6rem; color:var(--primary);">Quadrados</h3>
-      <table class="analysis-table">
-        <thead>
-          <tr>
-            <th>Tamanho</th>
-            <th>Layout</th>
-            <th>Un. / folha</th>
-            <th>Eficiência</th>
-            <th>Impacto no preço</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>3 × 3 cm</td><td>9 × 13</td><td>117</td><td class="eff-high">Excelente</td><td>Menor custo/un.</td></tr>
-          <tr><td>4 × 4 cm</td><td>7 × 10</td><td>70</td><td class="eff-high">Muito boa</td><td>Baixo custo/un.</td></tr>
-          <tr><td>4,5 × 4,5 cm</td><td>6 × 9</td><td>54</td><td class="eff-high">Boa</td><td>Bom custo/un.</td></tr>
-          <tr><td>5 × 5 cm</td><td>5 × 8</td><td>40</td><td class="eff-mid">Boa</td><td>Referência</td></tr>
-          <tr><td>6 × 6 cm</td><td>4 × 7</td><td>28</td><td class="eff-mid">Média</td><td>+ custo/un.</td></tr>
-          <tr><td>7 × 7 cm</td><td>4 × 6</td><td>24</td><td class="eff-mid">Média</td><td>+ custo/un.</td></tr>
-          <tr><td>8 × 8 cm</td><td>3 × 5</td><td>15</td><td class="eff-low">Baixa</td><td>Custo mais alto</td></tr>
-          <tr><td>10 × 10 cm</td><td>3 × 4</td><td>12</td><td class="eff-low">Baixa</td><td>Custo elevado</td></tr>
-          <tr><td>12 × 12 cm</td><td>2 × 3</td><td>6</td><td class="eff-low">Muito baixa</td><td>Maior custo/un.</td></tr>
-        </tbody>
-      </table>
-
-      <h3 style="font-size:1rem; margin-bottom:0.6rem; color:var(--primary);">Retangulares</h3>
-      <table class="analysis-table">
-        <thead>
-          <tr>
-            <th>Tamanho</th>
-            <th>Layout</th>
-            <th>Un. / folha</th>
-            <th>Eficiência</th>
-            <th>Impacto no preço</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>3 × 5 cm</td><td>9 × 8</td><td>72</td><td class="eff-high">Muito boa</td><td>Baixo custo/un.</td></tr>
-          <tr><td>4 × 6 cm</td><td>7 × 7</td><td>49</td><td class="eff-high">Boa</td><td>Bom custo/un.</td></tr>
-          <tr><td>5 × 7 cm</td><td>5 × 6</td><td>30</td><td class="eff-mid">Média</td><td>Referência</td></tr>
-          <tr><td>5 × 8 cm</td><td>5 × 5</td><td>25</td><td class="eff-mid">Média</td><td>+ custo/un.</td></tr>
-          <tr><td>6 × 9 cm</td><td>4 × 4</td><td>16</td><td class="eff-low">Baixa</td><td>Custo mais alto</td></tr>
-          <tr><td>7 × 10 cm</td><td>4 × 4</td><td>16</td><td class="eff-low">Baixa</td><td>Custo mais alto</td></tr>
-          <tr><td>8 × 12 cm</td><td>3 × 3</td><td>9</td><td class="eff-low">Baixa</td><td>Custo elevado</td></tr>
-          <tr><td>9 × 13 cm</td><td>3 × 3</td><td>9</td><td class="eff-low">Baixa</td><td>Custo elevado</td></tr>
-          <tr><td>10 × 15 cm</td><td>3 × 2</td><td>6</td><td class="eff-low">Muito baixa</td><td>Maior custo/un.</td></tr>
-        </tbody>
-      </table>
+      <div id="analysisTables"></div>
+      <p style="font-size:0.8rem;color:var(--muted);margin:0.5rem 0 1.25rem;">* Orientação rotacionada (melhor aproveitamento na área 20 × 28,5 cm). Layout calculado automaticamente.</p>
 
       <div class="info-grid">
         <div class="info-item">
@@ -908,7 +864,7 @@
           <div class="icon">🖨️</div>
           <div>
             <h3>Folha de referência</h3>
-            <p>32 × 45 cm — padrão comum em produção digital de adesivos</p>
+            <p>A4 · área útil 20 × 28,5 cm · espaçamento 2 mm</p>
           </div>
         </div>
         <div class="info-item">
@@ -1097,21 +1053,75 @@
       });
     })();
 
-    // Unidades por folha (para exibir no card)
-    const perSheet = {
-      quad: {
-        "3x3": 117, "4x4": 70, "4.5x4.5": 54, "5x5": 40,
-        "6x6": 28, "7x7": 24, "8x8": 15, "10x10": 12, "12x12": 6
-      },
-      ret: {
-        "3x5": 72, "4x6": 49, "5x7": 30, "5x8": 25,
-        "6x9": 16, "7x10": 16, "8x12": 9, "9x13": 9, "10x15": 6
-      },
-      red: {
-        "3x3": 117, "4x4": 70, "4.5x4.5": 54, "5x5": 40,
-        "6x6": 28, "7x7": 24, "8x8": 15, "10x10": 12, "12x12": 6
-      }
+    // ===== Cálculo automático de layout (folha A4) =====
+    const SHEET = {
+      printW: 20.0,   // cm — área de impressão
+      printH: 28.5,   // cm
+      gap: 0.2        // cm — 2 mm entre etiquetas
     };
+
+    /** Quantas peças cabem numa direção: n*(size+gap) - gap <= print */
+    function countAlong(printSize, pieceSize, gap) {
+      if (pieceSize > printSize) return 0;
+      return Math.floor((printSize + gap) / (pieceSize + gap));
+    }
+
+    /**
+     * Calcula layout automático.
+     * @param {number} w - largura (ou diâmetro) em cm
+     * @param {number} h - altura em cm (igual a w para quad/red)
+     * @param {boolean} allowRotate - testar rotação (retângulos)
+     * @returns {{ cols, rows, total, rotated, label }}
+     */
+    function calcLayout(w, h, allowRotate) {
+      const { printW, printH, gap } = SHEET;
+      const colsN = countAlong(printW, w, gap);
+      const rowsN = countAlong(printH, h, gap);
+      let best = { cols: colsN, rows: rowsN, total: colsN * rowsN, rotated: false };
+
+      if (allowRotate && w !== h) {
+        const colsR = countAlong(printW, h, gap);
+        const rowsR = countAlong(printH, w, gap);
+        const totalR = colsR * rowsR;
+        if (totalR > best.total) {
+          best = { cols: colsR, rows: rowsR, total: totalR, rotated: true };
+        }
+      }
+      best.label = best.cols + " × " + best.rows + (best.rotated ? "*" : "");
+      return best;
+    }
+
+    /** Interpreta a chave "4.5x4.5" ou "5x7" → {w,h} */
+    function parseSizeKey(key) {
+      const parts = key.split("x").map(Number);
+      return { w: parts[0], h: parts[1] || parts[0] };
+    }
+
+    function layoutFor(tab, key) {
+      const { w, h } = parseSizeKey(key);
+      return calcLayout(w, h, tab === "ret");
+    }
+
+    function efficiencyClass(total) {
+      if (total >= 24) return "eff-high";
+      if (total >= 9) return "eff-mid";
+      return "eff-low";
+    }
+    function efficiencyLabel(total) {
+      if (total >= 40) return "Excelente";
+      if (total >= 24) return "Muito boa";
+      if (total >= 15) return "Boa";
+      if (total >= 9) return "Média";
+      if (total >= 4) return "Baixa";
+      return "Muito baixa";
+    }
+    function priceImpact(total) {
+      if (total >= 24) return "Baixo custo/un.";
+      if (total >= 15) return "Referência";
+      if (total >= 9) return "+ custo/un.";
+      if (total >= 4) return "Custo mais alto";
+      return "Maior custo/un.";
+    }
 
     const labels = {
       quad: {
@@ -1193,7 +1203,7 @@
           preco: Math.round((item.preco * mult + gramAdd) * 100) / 100
         }));
         const cheapest = items[0];
-        const sheetQty = perSheet[currentTab][key];
+        const layout = layoutFor(currentTab, key);
         const isFeatured = key === featured[currentTab];
 
         const card = document.createElement("article");
@@ -1202,7 +1212,7 @@
           <div class="card-header">
             <div class="size">${labels[currentTab][key]}</div>
             <div class="meta">${matLabel} • ${gramLabel} • ${acabLabel}<br>${print}</div>
-            <div class="sheet-badge">${sheetQty} un. / folha</div>
+            <div class="sheet-badge">${layout.total} un. / folha · ${layout.label}</div>
           </div>
           <div class="card-body">
             <div class="price-main">
@@ -1230,7 +1240,45 @@
       });
     }
 
+    function renderAnalysisTables() {
+      const container = document.getElementById("analysisTables");
+      if (!container) return;
+      const groups = [
+        { tab: "quad", title: "Quadrados", sizeHeader: "Tamanho" },
+        { tab: "ret",  title: "Retangulares", sizeHeader: "Tamanho" },
+        { tab: "red",  title: "Redondos", sizeHeader: "Diâmetro" }
+      ];
+      container.innerHTML = groups.map(g => {
+        const keys = Object.keys(basePrices[g.tab]);
+        const rows = keys.map(key => {
+          const lay = layoutFor(g.tab, key);
+          return `<tr>
+            <td>${labels[g.tab][key]}</td>
+            <td>${lay.label}</td>
+            <td><strong>${lay.total}</strong></td>
+            <td class="${efficiencyClass(lay.total)}">${efficiencyLabel(lay.total)}</td>
+            <td>${priceImpact(lay.total)}</td>
+          </tr>`;
+        }).join("");
+        return `
+          <h3 style="font-size:1rem; margin:1rem 0 0.6rem; color:var(--primary);">${g.title}</h3>
+          <table class="analysis-table">
+            <thead>
+              <tr>
+                <th>${g.sizeHeader}</th>
+                <th>Layout</th>
+                <th>Un. / folha</th>
+                <th>Eficiência</th>
+                <th>Impacto no preço</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+      }).join("");
+    }
+
     updatePrices();
+    renderAnalysisTables();
   </script>
 </body>
 </html>
