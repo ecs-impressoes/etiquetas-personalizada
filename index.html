@@ -1237,16 +1237,16 @@
     }
 
     /**
-     * Aumento de 15% automático em Segunda (1), Quarta (3) e Sábado (6).
+     * Desconto de 22% automático em Segunda (1), Quarta (3) e Sábado (6).
      * getDay(): 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
      */
     function fatorAumentoDiario(data) {
       const d = (data || new Date()).getDay();
-      if (d === 1 || d === 3 || d === 6) return 1.15;
+      if (d === 1 || d === 3 || d === 6) return 0.78; // −22%
       return 1;
     }
     function isDiaComAumento(data) {
-      return fatorAumentoDiario(data) > 1;
+      return fatorAumentoDiario(data) < 1;
     }
     function nomeDiaAumento() {
       const nomes = ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
@@ -1269,7 +1269,7 @@
 
       const mult = materialMult[material] * printMult[print] * acabamentoMult[acabamento];
       const gramAdd = gramaturaAdd[gramatura];
-      const diaMult = fatorAumentoDiario(); // +15% em Seg, Qua e Sáb
+      const diaMult = fatorAumentoDiario(); // −22% em Seg, Qua e Sáb
 
       const matLabel  = materialLabels[material];
       const gramLabel = gramatura + "g";
@@ -1281,7 +1281,7 @@
       const refPrice = Math.round((refBase * mult + gramAdd) * diaMult * 100) / 100;
       let configTxt = `${matLabel} • ${gramLabel} • ${acabLabel} • ${print}`;
       if (isDiaComAumento()) {
-        configTxt += ` · +15% (${nomeDiaAumento()})`;
+        configTxt += ` · −22% (${nomeDiaAumento()})`;
       }
       document.getElementById("summaryConfig").textContent = configTxt;
       document.getElementById("summaryPrice").textContent = formatBRL(refPrice);
@@ -1300,7 +1300,10 @@
             summary.parentNode.insertBefore(aviso, summary.nextSibling);
           }
         }
-        aviso.innerHTML = `<strong>Ajuste do dia:</strong> valores com <strong>+15%</strong> aplicados automaticamente (${nomeDiaAumento()}).`;
+        aviso.innerHTML = `<strong>Promoção do dia:</strong> valores com <strong>−22% de desconto</strong> aplicados automaticamente (${nomeDiaAumento()}).`;
+        aviso.style.background = "#e8f8ef";
+        aviso.style.borderColor = "#0d783e";
+        aviso.style.color = "#0d3d22";
         aviso.style.display = "block";
       } else if (aviso) {
         aviso.style.display = "none";
@@ -1493,7 +1496,7 @@
   <h1>ECS Impressões – Layouts A4 e Preços</h1>
   <div class="meta">
     <strong>Data:</strong> ${hoje} &nbsp;·&nbsp;
-    <strong>Configuração:</strong> ${material} · ${gramatura} · ${acabamento} · ${print}${diaMult > 1 ? " · <strong>+15% (" + nomeDiaAumento() + ")</strong>" : ""}<br>
+    <strong>Configuração:</strong> ${material} · ${gramatura} · ${acabamento} · ${print}${diaMult < 1 ? " · <strong>−22% (" + nomeDiaAumento() + ")</strong>" : ""}<br>
     <strong>Folha:</strong> A4 (21 × 29,7 cm) &nbsp;·&nbsp;
     <strong>Área de impressão:</strong> 20 × 28,5 cm &nbsp;·&nbsp;
     <strong>Espaçamento:</strong> 2 mm<br>
