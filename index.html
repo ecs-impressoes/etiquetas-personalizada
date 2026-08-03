@@ -753,6 +753,35 @@
       border: 0;
     }
 
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .btn-print:hover { background: var(--primary-dark); }
+    .print-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+    .print-actions .tabs {
+      flex: 1;
+      margin-bottom: 0;
+      min-width: 200px;
+    }
+
     @media (max-width: 700px) {
       .filters { flex-direction: column; align-items: stretch; }
       .filters select { width: 100%; min-width: 0; }
@@ -765,6 +794,44 @@
       .analysis-table th, .analysis-table td { padding: 0.45rem 0.5rem; }
       .footer-content { grid-template-columns: 1fr; gap: 1.5rem; }
       .map-section iframe { height: 260px; }
+      .btn-print { width: 100%; justify-content: center; }
+    }
+
+    @media print {
+      body { background: #fff; color: #000; font-size: 11pt; }
+      .header {
+        background: #054786 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 1rem;
+      }
+      .header::before { display: none; }
+      .container { margin: 0; max-width: 100%; padding: 0.5rem; }
+      .filters, .tabs, .btn-print, .print-actions,
+      .reviews-section, .map-section, footer#contato,
+      .card-footer, .btn { display: none !important; }
+      .summary { box-shadow: none; border: 1px solid #ccc; }
+      .price-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.6rem;
+      }
+      .card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .card.featured::after { display: none; }
+      .card:hover { transform: none; }
+      .analysis-section {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        margin-top: 1rem;
+        break-before: page;
+      }
+      .analysis-table { font-size: 9pt; }
+      a { color: #000; text-decoration: none; }
     }
   </style>
 </head>
@@ -824,10 +891,18 @@
       </div>
     </div>
 
-    <div class="tabs">
-      <button class="tab-btn active" id="tab-quad" onclick="switchTab('quad')">Quadrados</button>
-      <button class="tab-btn" id="tab-ret" onclick="switchTab('ret')">Retangulares</button>
-      <button class="tab-btn" id="tab-red" onclick="switchTab('red')">Redondos</button>
+    <div class="print-actions">
+      <div class="tabs" style="flex:1; margin-bottom:0;">
+        <button class="tab-btn active" id="tab-quad" onclick="switchTab('quad')">Quadrados</button>
+        <button class="tab-btn" id="tab-ret" onclick="switchTab('ret')">Retangulares</button>
+        <button class="tab-btn" id="tab-red" onclick="switchTab('red')">Redondos</button>
+      </div>
+      <button type="button" class="btn-print" onclick="imprimirPDF()" title="Abrir diálogo de impressão / salvar como PDF">
+        <i class="fas fa-file-pdf"></i> Imprimir / PDF
+      </button>
+      <button type="button" class="btn-print" style="background:#0d783e;" onclick="baixarPDFTabelas()" title="Baixar PDF das tabelas de layout">
+        <i class="fas fa-download"></i> PDF Layouts
+      </button>
     </div>
 
     <div class="price-grid" id="priceGrid"></div>
@@ -1161,6 +1236,23 @@
       return (total / qtd).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     }
 
+    /**
+     * Aumento de 15% automático em Segunda (1), Quarta (3) e Sábado (6).
+     * getDay(): 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
+     */
+    function fatorAumentoDiario(data) {
+      const d = (data || new Date()).getDay();
+      if (d === 1 || d === 3 || d === 6) return 1.15;
+      return 1;
+    }
+    function isDiaComAumento(data) {
+      return fatorAumentoDiario(data) > 1;
+    }
+    function nomeDiaAumento() {
+      const nomes = ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+      return nomes[new Date().getDay()];
+    }
+
     function switchTab(tab) {
       currentTab = tab;
       document.getElementById("tab-quad").classList.toggle("active", tab === "quad");
@@ -1177,6 +1269,7 @@
 
       const mult = materialMult[material] * printMult[print] * acabamentoMult[acabamento];
       const gramAdd = gramaturaAdd[gramatura];
+      const diaMult = fatorAumentoDiario(); // +15% em Seg, Qua e Sáb
 
       const matLabel  = materialLabels[material];
       const gramLabel = gramatura + "g";
@@ -1185,12 +1278,33 @@
       // Resumo — referência 5x5 (quad) ou 5x7 (ret)
       const refKey = featured[currentTab];
       const refBase = basePrices[currentTab][refKey][0].preco;
-      const refPrice = Math.round((refBase * mult + gramAdd) * 100) / 100;
-      document.getElementById("summaryConfig").textContent =
-        `${matLabel} • ${gramLabel} • ${acabLabel} • ${print}`;
+      const refPrice = Math.round((refBase * mult + gramAdd) * diaMult * 100) / 100;
+      let configTxt = `${matLabel} • ${gramLabel} • ${acabLabel} • ${print}`;
+      if (isDiaComAumento()) {
+        configTxt += ` · +15% (${nomeDiaAumento()})`;
+      }
+      document.getElementById("summaryConfig").textContent = configTxt;
       document.getElementById("summaryPrice").textContent = formatBRL(refPrice);
       document.getElementById("summaryUnit").textContent =
         `para 50 un. (${labels[currentTab][refKey]})`;
+
+      // Aviso visual do aumento diário
+      let aviso = document.getElementById("avisoAumentoDiario");
+      if (isDiaComAumento()) {
+        if (!aviso) {
+          aviso = document.createElement("div");
+          aviso.id = "avisoAumentoDiario";
+          aviso.style.cssText = "background:#fff3cd;border:1px solid #f0b429;color:#5c4a1a;border-radius:8px;padding:0.65rem 1rem;margin-bottom:1rem;font-size:0.88rem;";
+          const summary = document.getElementById("summary");
+          if (summary && summary.parentNode) {
+            summary.parentNode.insertBefore(aviso, summary.nextSibling);
+          }
+        }
+        aviso.innerHTML = `<strong>Ajuste do dia:</strong> valores com <strong>+15%</strong> aplicados automaticamente (${nomeDiaAumento()}).`;
+        aviso.style.display = "block";
+      } else if (aviso) {
+        aviso.style.display = "none";
+      }
 
       const grid = document.getElementById("priceGrid");
       grid.innerHTML = "";
@@ -1200,7 +1314,7 @@
       sizes.forEach(key => {
         const items = basePrices[currentTab][key].map(item => ({
           qtd: item.qtd,
-          preco: Math.round((item.preco * mult + gramAdd) * 100) / 100
+          preco: Math.round((item.preco * mult + gramAdd) * diaMult * 100) / 100
         }));
         const cheapest = items[0];
         const layout = layoutFor(currentTab, key);
@@ -1275,6 +1389,149 @@
             <tbody>${rows}</tbody>
           </table>`;
       }).join("");
+    }
+
+    /** Impressão do site (usuário pode salvar como PDF no navegador) */
+    function imprimirPDF() {
+      window.print();
+    }
+
+    /**
+     * Gera HTML de documento de impressão com layouts A4 calculados
+     * e abre em nova janela para imprimir / salvar PDF.
+     */
+    function baixarPDFTabelas() {
+      const material = materialLabels[document.getElementById("material").value];
+      const gramatura = document.getElementById("gramatura").value + " g/m²";
+      const print = document.getElementById("print").value;
+      const acabamento = acabamentoLabels[document.getElementById("acabamento").value];
+      const hoje = new Date().toLocaleDateString("pt-BR");
+
+      const groups = [
+        { tab: "quad", title: "Quadrados" },
+        { tab: "ret",  title: "Retangulares" },
+        { tab: "red",  title: "Redondos" }
+      ];
+
+      let tablesHTML = "";
+      groups.forEach(g => {
+        const keys = Object.keys(basePrices[g.tab]);
+        const rows = keys.map(key => {
+          const lay = layoutFor(g.tab, key);
+          const { w, h } = parseSizeKey(key);
+          return `<tr>
+            <td>${labels[g.tab][key]}</td>
+            <td>${w.toFixed(1).replace(".0","")} × ${h.toFixed(1).replace(".0","")} cm</td>
+            <td>${lay.label}</td>
+            <td style="text-align:center;font-weight:700;">${lay.total}</td>
+            <td>${efficiencyLabel(lay.total)}</td>
+          </tr>`;
+        }).join("");
+        tablesHTML += `
+          <h2>${g.title}</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Medida</th>
+                <th>Dimensão</th>
+                <th>Layout (col × lin)</th>
+                <th>Un. / folha</th>
+                <th>Eficiência</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+      });
+
+      // Preços da aba atual
+      const mult = materialMult[document.getElementById("material").value]
+        * printMult[document.getElementById("print").value]
+        * acabamentoMult[document.getElementById("acabamento").value];
+      const gramAdd = gramaturaAdd[document.getElementById("gramatura").value];
+      const diaMult = fatorAumentoDiario();
+      const priceKeys = Object.keys(basePrices[currentTab]);
+      const priceRows = priceKeys.map(key => {
+        const lay = layoutFor(currentTab, key);
+        const item = basePrices[currentTab][key][0];
+        const preco = Math.round((item.preco * mult + gramAdd) * diaMult * 100) / 100;
+        return `<tr>
+          <td>${labels[currentTab][key]}</td>
+          <td>${lay.total} un./folha</td>
+          <td>${item.qtd} un.</td>
+          <td style="text-align:right;font-weight:600;">${formatBRL(preco)}</td>
+          <td style="text-align:right;">${unitPrice(preco, item.qtd)}</td>
+        </tr>`;
+      }).join("");
+
+      const tabNames = { quad: "Quadrados", ret: "Retangulares", red: "Redondos" };
+      const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Layouts A4 e Preços – ECS Impressões</title>
+  <style>
+    @page { size: A4; margin: 12mm; }
+    * { box-sizing: border-box; }
+    body { font-family: Inter, Arial, sans-serif; color: #1a1a1a; font-size: 10pt; line-height: 1.4; }
+    h1 { font-size: 16pt; color: #054786; margin: 0 0 4px; }
+    h2 { font-size: 12pt; color: #054786; margin: 18px 0 8px; border-bottom: 2px solid #054786; padding-bottom: 4px; }
+    .meta { font-size: 9pt; color: #5a6a7a; margin-bottom: 14px; }
+    .meta strong { color: #1a1a1a; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 9pt; }
+    th, td { border: 1px solid #ccc; padding: 5px 7px; text-align: left; }
+    th { background: #e8f0f8; color: #054786; font-weight: 600; }
+    .footer { margin-top: 20px; font-size: 8pt; color: #7a92a8; border-top: 1px solid #ddd; padding-top: 8px; }
+    .badge { display: inline-block; background: #e8f0f8; color: #054786; padding: 2px 8px; border-radius: 4px; font-size: 8pt; font-weight: 600; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      h2 { break-after: avoid; }
+      table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <h1>ECS Impressões – Layouts A4 e Preços</h1>
+  <div class="meta">
+    <strong>Data:</strong> ${hoje} &nbsp;·&nbsp;
+    <strong>Configuração:</strong> ${material} · ${gramatura} · ${acabamento} · ${print}${diaMult > 1 ? " · <strong>+15% (" + nomeDiaAumento() + ")</strong>" : ""}<br>
+    <strong>Folha:</strong> A4 (21 × 29,7 cm) &nbsp;·&nbsp;
+    <strong>Área de impressão:</strong> 20 × 28,5 cm &nbsp;·&nbsp;
+    <strong>Espaçamento:</strong> 2 mm<br>
+    <span class="badge">Fórmula: col = piso((20+0,2)/(L+0,2)) · lin = piso((28,5+0,2)/(A+0,2))</span>
+  </div>
+
+  <h2>Preços – ${tabNames[currentTab]} (a partir de 50 un.)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Medida</th>
+        <th>Aproveitamento</th>
+        <th>Qtd. ref.</th>
+        <th>Preço total</th>
+        <th>Preço / un.</th>
+      </tr>
+    </thead>
+    <tbody>${priceRows}</tbody>
+  </table>
+
+  ${tablesHTML}
+
+  <div class="footer">
+    ECS Impressões · Av. Brasil, 284 – Casqueiro, Cubatão – SP · (13) 98808-9754<br>
+    Documento gerado automaticamente · Valores referenciais · * = orientação rotacionada
+  </div>
+  <script>window.onload = function(){ window.print(); };<\/script>
+</body>
+</html>`;
+
+      const win = window.open("", "_blank", "width=900,height=700");
+      if (!win) {
+        alert("Permita pop-ups para gerar o PDF.");
+        return;
+      }
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
     }
 
     updatePrices();
